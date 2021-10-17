@@ -1,3 +1,6 @@
+const loginRequest = {login: "", password: ""};
+let loginResponse = {username:"", token:""};
+
 function login() {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", "http://localhost:8080/login", true);
@@ -5,30 +8,24 @@ function login() {
     xmlHttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             getToken(this.responseText);
-        } else if (this.status === 400) {
-            if (login === "" || password === "") {
+        } else if (this.status === 400 || 403) {
+            if (loginRequest.login === "" || loginRequest.password === "") {
                 document.getElementById("token").innerHTML = "Enter login and password";
             } else {
-                document.getElementById("token").innerHTML = "User " + login + " was not found";
+                document.getElementById("token").innerHTML = "User " + loginRequest.login + " was not found";
             }
         } else {
             document.getElementById("token").innerHTML = "Something bab happened";
         }
     }
-    const login = document.getElementById("login").value;
-    const password = document.getElementById("password").value;
-    console.log(login);
-    console.log(password);
-    const params = {
-        "login": login,
-        "password": password
-    }
-    console.log(params);
-    xmlHttp.send(JSON.stringify(params));
+    loginRequest.login = document.getElementById("login").value;
+    loginRequest.password = document.getElementById("password").value;
+    console.log(loginRequest);
+    xmlHttp.send(JSON.stringify(loginRequest));
 }
 
 function getToken(data) {
-    const jwtTokenResponse = JSON.parse(data);
-    document.getElementById("token").innerHTML = jwtTokenResponse.token;
+    loginResponse = JSON.parse(data);
+    document.getElementById("token").innerHTML = loginResponse.token;
     console.log(data);
 }
